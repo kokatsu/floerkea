@@ -4,6 +4,8 @@ on:
   pull_request:
     types:
       - opened
+    paths:
+      - "**.mmd"
 
 jobs:
   comment-on-diff:
@@ -28,44 +30,58 @@ jobs:
 
       - name: Get Mermaid diff
         run: |
-          # Get the list of modified .mmd files
-          git diff --name-only "${GITHUB_EVENT_PULL_REQUEST_BASE_SHA}" "${GITHUB_SHA}" | grep '.mmd$' > modified_mmd_files.txt
+          # Get the list of added and modified .mmd files
+          {
+            # List added files
+            git diff --name-status "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}" | grep '^A.*\.mmd$' | cut -f2
+            # List modified files
+            git diff --name-status "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}" | grep '^M.*\.mmd$' | cut -f2
+          } > changed_mmd_files.txt
 
-          # If no .mmd files were modified, skip the next steps
-          if [[ ! -s "modified_mmd_files.txt" ]]; then
-            echo "No Mermaid files were modified."
+          # If no .mmd files were changed, skip the next steps
+          if [[ ! -s changed_mmd_files.txt ]]; then
+            echo "No Mermaid files were changed."
             exit 0
           fi
+
+          # Create the comment file header
+          echo "# Mermaid Diagram Changes" > pr_comment.md
 
           # Process each .mmd file
           while read -r file; do
             echo "Processing file: ${file}"
 
-            # Get the previous version of the file
-            git show "${GITHUB_EVENT_PULL_REQUEST_BASE_SHA}:${file}" > "before_${file}" || echo "No previous version found for ${file}"
-
-            # Get the current version of the file
-            cat "${file}" > "after_${file}"
-
-            # Prepare Mermaid diagram diff
-            {
-              echo "### Changes in ${file}"
-              echo "#### Before"
-              echo "\`\`\`mermaid"
-              cat "before_${file}"
-              echo "\`\`\`"
-              echo "#### After"
-              echo "\`\`\`mermaid"
-              cat "after_${file}"
-              echo "\`\`\`"
-            } >> pr_comment.md
-          done < modified_mmd_files.txt
+            # Check if file is newly added
+            if git diff --name-status "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}" | grep -q "^A.*${file}$"; then
+              echo "### New file: ${file}" >> pr_comment.md
+              {
+                echo "#### Content"
+                echo "\`\`\`mermaid"
+                cat "${file}"
+                echo "\`\`\`"
+              } >> pr_comment.md
+            else
+              # For modified files, show before and after
+              echo "### Changes in ${file}" >> pr_comment.md
+              {
+                echo "#### Before"
+                echo "\`\`\`mermaid"
+                git show "${{ github.event.pull_request.base.sha }}:${file}" 2>/dev/null || echo "No previous version"
+                echo "\`\`\`"
+                echo "#### After"
+                echo "\`\`\`mermaid"
+                cat "${file}"
+                echo "\`\`\`"
+              } >> pr_comment.md
+            fi
+          done < changed_mmd_files.txt
 
       - name: Post comment to pull request
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # If the comment file exists, post it to the PR
-          if [ -f "pr_comment.md" ]; then
-            gh pr comment "${GITHUB_EVENT_NUMBER}" --body-file "pr_comment.md"
+          if [ -f pr_comment.md ]; then
+            gh pr comment "${{ github.event.pull_request.number }}" --body-file pr_comment.md
           else
             echo "No Mermaid diagrams to comment on."
           fi
