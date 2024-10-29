@@ -1,0 +1,67 @@
+name: Mermaid Diff Comment
+
+on:
+  pull_request:
+    types:
+      - opened
+
+jobs:
+  comment-on-diff:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install jq
+        run: sudo apt-get install jq
+
+      - name: Install GitHub CLI
+        run: sudo apt-get install gh
+
+      - name: Get Mermaid diff
+        run: |
+          # Get the list of modified .mmd files
+          git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep '.mmd$' > modified_mmd_files.txt
+
+          # If no .mmd files were modified, skip the next steps
+          if [[ ! -s modified_mmd_files.txt ]]; then
+            echo "No Mermaid files were modified."
+            exit 0
+          fi
+
+          # Process each .mmd file
+          while read file; do
+            echo "Processing file: $file"
+
+            # Get the previous version of the file
+            git show ${{ github.event.pull_request.base.sha }}:$file > before_$file || echo "No previous version found for $file"
+
+            # Get the current version of the file
+            cat $file > after_$file
+
+            # Prepare Mermaid diagram diff
+            echo "### Changes in $file" >> pr_comment.md
+            echo "#### Before" >> pr_comment.md
+            echo "\`\`\`mermaid" >> pr_comment.md
+            cat before_$file >> pr_comment.md
+            echo "\`\`\`" >> pr_comment.md
+            echo "#### After" >> pr_comment.md
+            echo "\`\`\`mermaid" >> pr_comment.md
+            cat after_$file >> pr_comment.md
+            echo "\`\`\`" >> pr_comment.md
+          done < modified_mmd_files.txt
+
+      - name: Post comment to pull request
+        run: |
+          # If the comment file exists, post it to the PR
+          if [ -f pr_comment.md ]; then
+            gh pr comment ${{ github.event.pull_request.number }} --body-file pr_comment.md
+          else
+            echo "No Mermaid diagrams to comment on."
+          fi
