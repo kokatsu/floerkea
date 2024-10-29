@@ -1,7 +1,7 @@
 flowchart TD
 Start([開始]) --> CheckFile{Mermaidファイルの変更があるか?}
-CheckFile --> |ある| Parse[Mermaidファイルを解析]
-CheckFile --> |ない| End([終了])
+CheckFile --> |変更がある| Parse[Mermaidファイルを解析]
+CheckFile --> |変更がない| End([終了])
 Parse --> Validate{構文が正しいか?}
 Validate --> |正しい| Comment[コメントを作成]
 Validate --> |正しくない| Error[エラーを表示]
