@@ -1,3 +1,7 @@
 [install.lockfile]
 print = "yarn"
 save = true
+
+[test]
+coverage = true
+root = "./test"
