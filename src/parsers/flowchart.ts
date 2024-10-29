@@ -2,28 +2,12 @@ import { type EdgeMatchResult, EdgeMatcher } from '../matchers/edge';
 import { NodeMatcher } from '../matchers/node';
 import type { Direction } from '../types/direction';
 import type { Edge, EdgeStyle } from '../types/edge';
-import type { Node, NodeShape, NodeStyle } from '../types/node';
+import type { FlowchartNode, FlowchartNodeType } from '../types/flowchart';
+import type { NodeShape, NodeStyle } from '../types/node';
 import type { ParseResult } from '../types/parser';
 import { ErrorCodes, ParseError } from '../utils/errors';
 import { validateDirection, validateNodeReferences } from '../utils/validators';
 import { BaseParser } from './base';
-
-// フローチャート特有のノードタイプ
-export type FlowchartNodeType =
-  | 'start'
-  | 'end'
-  | 'process'
-  | 'decision'
-  | 'input'
-  | 'output'
-  | 'subroutine'
-  | 'database'
-  | 'custom';
-
-interface FlowchartNode extends Node {
-  nodeType: FlowchartNodeType;
-  description?: string;
-}
 
 export class FlowchartParser extends BaseParser {
   private nodes: Map<string, FlowchartNode> = new Map();
