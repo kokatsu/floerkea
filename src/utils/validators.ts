@@ -33,10 +33,18 @@ export const validateNodeShape = (
   const validShapes: NodeShape[] = [
     'square',
     'round',
+    'stadium',
+    'subroutine',
+    'cylindrical',
     'circle',
+    'asymmetric',
     'rhombus',
     'hexagon',
     'parallelogram',
+    'parallelogram-alt',
+    'trapezoid',
+    'trapezoid-alt',
+    'double-circle',
   ];
   if (!validShapes.includes(shape as NodeShape)) {
     throw new ParseError(
