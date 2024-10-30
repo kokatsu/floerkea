@@ -174,7 +174,11 @@ export class FlowchartParser extends BaseParser {
     }
 
     const { shape, label } = matchResult.result;
-    const { nodeType, style } = this.determineNodeTypeAndStyle(shape, label);
+    const { nodeType, style } = this.determineNodeTypeAndStyle(
+      shape,
+      id,
+      label,
+    );
 
     this.nodes.set(id, {
       id,
@@ -191,7 +195,11 @@ export class FlowchartParser extends BaseParser {
     // 未定義のノードを自動的に追加
     if (from.node) {
       const { shape, label } = from.node;
-      const { nodeType, style } = this.determineNodeTypeAndStyle(shape, label);
+      const { nodeType, style } = this.determineNodeTypeAndStyle(
+        shape,
+        from.id,
+        label,
+      );
       this.nodes.set(from.id, {
         id: from.id,
         label,
@@ -203,7 +211,11 @@ export class FlowchartParser extends BaseParser {
 
     if (to.node) {
       const { shape, label } = to.node;
-      const { nodeType, style } = this.determineNodeTypeAndStyle(shape, label);
+      const { nodeType, style } = this.determineNodeTypeAndStyle(
+        shape,
+        to.id,
+        label,
+      );
       this.nodes.set(to.id, {
         id: to.id,
         label,
@@ -226,17 +238,19 @@ export class FlowchartParser extends BaseParser {
 
   private determineNodeTypeAndStyle(
     shape: NodeShape,
+    id: string,
     label: string,
   ): {
     nodeType: FlowchartNodeType;
     style: NodeStyle;
   } {
     let nodeType: FlowchartNodeType = 'process';
+    const lowerId = id.toLowerCase();
     const lowerLabel = label.toLowerCase();
 
-    if (lowerLabel.includes('start')) {
+    if (lowerId.includes('start') || lowerLabel.includes('start')) {
       nodeType = 'start';
-    } else if (lowerLabel.includes('end')) {
+    } else if (lowerId.includes('end') || lowerLabel.includes('end')) {
       nodeType = 'end';
     } else {
       switch (shape) {
@@ -257,18 +271,9 @@ export class FlowchartParser extends BaseParser {
         case 'cylindrical':
           nodeType = 'database';
           break;
-        case 'circle':
-        case 'double-circle':
-          // 円形でstartかendを含む場合はそれぞれのタイプに
-          if (lowerLabel.includes('start')) {
-            nodeType = 'start';
-          } else if (lowerLabel.includes('end')) {
-            nodeType = 'end';
-          }
-          break;
         case 'hexagon':
           // 六角形で特定のキーワードがある場合はサブルーチンとして扱う
-          if (lowerLabel.includes('sub') || lowerLabel.includes('call')) {
+          if (lowerId.includes('sub') || lowerId.includes('call')) {
             nodeType = 'subroutine';
           }
           break;
