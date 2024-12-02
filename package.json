@@ -19,5 +19,5 @@
   "dependencies": {
     "mermaid": "^11.4.0"
   },
-  "packageManager": "bun@1.1.37"
+  "packageManager": "bun@1.1.38"
 }
