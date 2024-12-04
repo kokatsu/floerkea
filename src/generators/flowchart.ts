@@ -87,107 +87,6 @@ export class FlowchartTestCaseGenerator {
   }
 
   /**
-   * フロー内の次のノードを取得
-   */
-  private findNextFlowNodes(edges: Edge[], node: Node): Node[] {
-    return edges
-      .filter((edge) => edge.from === node.id)
-      .map((edge) => ({ id: edge.to, label: edge.label || '' }) as Node);
-  }
-
-  /**
-   * フローチャートの解析結果からテストケースを生成
-   */
-  // generateFlowchartTestCases(flowchart: ParseResult): TestCase[] {
-  //   this.currentEdges = flowchart.edges;
-  //   const testCases: TestCase[] = [];
-
-  //   // 開始ノードを探索
-  //   const startNodes = flowchart.nodes.filter((node) => this.isStartNode(node));
-
-  //   if (startNodes.length === 0) {
-  //     // 開始ノードが見つからない場合は入次数0のノードを開始ノードとして扱う
-  //     const entryNodes = flowchart.nodes.filter((node) =>
-  //       this.isFirstNode(node.id),
-  //     );
-  //     if (entryNodes.length > 0) {
-  //       for (const entryNode of entryNodes) {
-  //         const paths = this.findAllFlowPaths(flowchart, entryNode);
-  //         for (const path of paths) {
-  //           testCases.push(
-  //             this.createFlowTestCase(
-  //               path,
-  //               flowchart.edges,
-  //               testCases.length + 1,
-  //             ),
-  //           );
-  //         }
-  //       }
-  //     }
-  //   } else {
-  //     // 開始ノードからのパスを探索
-  //     for (const startNode of startNodes) {
-  //       const paths = this.findAllFlowPaths(flowchart, startNode);
-  //       for (const path of paths) {
-  //         testCases.push(
-  //           this.createFlowTestCase(
-  //             path,
-  //             flowchart.edges,
-  //             testCases.length + 1,
-  //           ),
-  //         );
-  //       }
-  //     }
-  //   }
-
-  //   return testCases;
-  // }
-
-  /**
-   * 指定ノードから到達可能な全フローパスを探索
-   */
-  private findAllFlowPaths(
-    flowchart: ParseResult,
-    start: Node,
-    maxCycles = 1,
-  ): Node[][] {
-    const paths: Node[][] = [];
-    const visited = new Map<string, number>(); // ノードの訪問回数を記録
-
-    const dfs = (current: Node, path: Node[]) => {
-      path.push(current);
-      const currentVisits = visited.get(current.id) || 0;
-      visited.set(current.id, currentVisits + 1);
-
-      // 終了条件の判定
-      const isTerminal = this.isEndNode(current) || this.isLastNode(current.id);
-      const maxVisitsReached = (visited.get(current.id) || 0) > maxCycles;
-
-      if (isTerminal || maxVisitsReached) {
-        // パスが妥当な場合のみ記録（開始から終了まで）
-        if (isTerminal) {
-          paths.push([...path]);
-        }
-      } else {
-        // 次のノードを探索
-        const nextNodes = this.findNextFlowNodes(flowchart.edges, current);
-        for (const next of nextNodes) {
-          // 循環検出のための条件を緩和
-          if ((visited.get(next.id) || 0) <= maxCycles) {
-            dfs(next, path);
-          }
-        }
-      }
-
-      path.pop();
-      visited.set(current.id, (visited.get(current.id) || 1) - 1);
-    };
-
-    dfs(start, []);
-    return paths;
-  }
-
-  /**
    * 循環参照を含むパスかどうかを判定
    */
   private isCircularPath(path: Node[]): boolean {
@@ -325,7 +224,7 @@ export class FlowchartTestCaseGenerator {
     index: number,
   ): TestCase {
     const id = `${this.options.idPrefix}-${String(index).padStart(3, '0')}`;
-    const pathDescription = path.map((node) => node.label).join(' → ');
+    const pathDescription = path.map((node) => node.label).join('　→　');
 
     // エラーパスの判定を改善
     const isErrorPath = this.isErrorPath(path, edges);
@@ -442,7 +341,7 @@ export class FlowchartTestCaseGenerator {
       // エッジのラベルがある場合は条件として追加
       const edge = edges.find((e) => e.from === current.id && e.to === next.id);
       if (edge?.label) {
-        steps.push(`分岐条件「${edge.label}」に該当する操作を行う`);
+        steps.push(`分岐条件「${edge.label}」に該当する操作をする`);
       }
     }
 
