@@ -27,7 +27,7 @@ const generate = async () => {
     throw new Error('Invalid file extension');
   }
 
-  const output = `${file.name?.replace('/docs/mermaid/', '/docs/testcases/')}.md`;
+  const output = `${file.name?.replace('docs/mermaid/', 'docs/testcases/')}.md`;
 
   const text = await file.text();
 
