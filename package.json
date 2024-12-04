@@ -5,8 +5,8 @@
     "generate": "bun run scripts/generate.ts",
     "lint": "biome check .",
     "lint:fix": "biome check . --write",
-    "text": "textlint **/*.md",
-    "text:fix": "textlint **/*.md --fix"
+    "text": "bun run ./scripts/textlint.ts **/*.md",
+    "text:fix": "bun run ./scripts/textlint.ts **/*.md --fix"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
