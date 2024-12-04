@@ -1,0 +1,16 @@
+{
+  "plugins": {},
+  "filters": {},
+  "rules": {
+    "@textlint-ja/no-synonyms": true,
+    "prefer-tari-tari": true,
+    "preset-ja-spacing": true,
+    "preset-ja-technical-writing": {
+      "ja-no-mixed-period": false,
+      "no-exclamation-question-mark": {
+        "allowFullWidthQuestion": true
+      }
+    },
+    "spellcheck-tech-word": true
+  }
+}
