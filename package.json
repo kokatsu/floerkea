@@ -16,7 +16,7 @@
     "@types/bun": "^1.1.14",
     "lefthook": "1.11.14",
     "sudachi-synonyms-dictionary": "^14.0.0",
-    "textlint": "^14.4.0",
+    "textlint": "^15.0.1",
     "textlint-rule-prefer-tari-tari": "^1.0.3",
     "textlint-rule-preset-ja-spacing": "^2.4.3",
     "textlint-rule-preset-ja-technical-writing": "^12.0.2",
