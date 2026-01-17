@@ -1,4 +1,4 @@
-import { type EdgeMatchResult, EdgeMatcher } from '../matchers/edge';
+import { EdgeMatcher, type EdgeMatchResult } from '../matchers/edge';
 import { NodeMatcher } from '../matchers/node';
 import type { Direction } from '../types/direction';
 import type { Edge, EdgeStyle } from '../types/edge';

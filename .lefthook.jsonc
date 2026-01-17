@@ -1,0 +1,31 @@
+{
+  "pre-commit": {
+    "commands": {
+      "biome": {
+        "glob": "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}",
+        "run": "biome check --write --no-errors-on-unmatched --files-ignore-unknown=true {staged_files} && git update-index --again"
+      },
+      "actionlint": {
+        "root": ".github/workflows",
+        "glob": "*.yml",
+        "run": "actionlint"
+      }
+    }
+  },
+  "pre-push": {
+    "commands": {
+      "biome": {
+        "glob": "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}",
+        "run": "biome check --no-errors-on-unmatched --files-ignore-unknown=true {push_files}"
+      }
+    }
+  },
+  "commit-msg": {
+    "skip": ["merge"],
+    "commands": {
+      "commitlint": {
+        "run": "bun run commitlint --edit {1}"
+      }
+    }
+  }
+}

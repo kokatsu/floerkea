@@ -37,7 +37,6 @@ const DEFAULT_FLOWCHART_PRIORITY_RULES = {
 export class FlowchartTestCaseGenerator {
   private options: Required<FlowchartTestCaseGeneratorOptions>;
   private currentEdges: Edge[] = [];
-  private nodeTypeMap: Map<string, FlowchartNodeType> = new Map();
 
   constructor(options?: FlowchartTestCaseGeneratorOptions) {
     this.options = {
