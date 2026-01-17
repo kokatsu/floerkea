@@ -14,18 +14,15 @@ describe('EdgeMatcher', () => {
       ['A ==> B', 'thick', undefined, 'A', 'B'],
       ['A -->|label| B', 'solid', 'label', 'A', 'B'],
       ['node_1 --> node_2', 'solid', undefined, 'node_1', 'node_2'],
-    ])(
-      '基本的なエッジ "%s" をパースできる',
-      (input, expectedType, expectedLabel, expectedFrom, expectedTo) => {
-        const result = matcher.match(input);
+    ])('基本的なエッジ "%s" をパースできる', (input, expectedType, expectedLabel, expectedFrom, expectedTo) => {
+      const result = matcher.match(input);
 
-        expect(result.matched).toBe(true);
-        expect(result.result?.lineType).toBe(expectedType as EdgeLineType);
-        expect(result.result?.label).toBe(expectedLabel as string);
-        expect(result.result?.from.id).toBe(expectedFrom);
-        expect(result.result?.to.id).toBe(expectedTo);
-      },
-    );
+      expect(result.matched).toBe(true);
+      expect(result.result?.lineType).toBe(expectedType as EdgeLineType);
+      expect(result.result?.label).toBe(expectedLabel as string);
+      expect(result.result?.from.id).toBe(expectedFrom);
+      expect(result.result?.to.id).toBe(expectedTo);
+    });
 
     test('ノード形状を含むエッジ定義をパースできる', () => {
       const testCases = [

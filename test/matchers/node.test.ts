@@ -22,17 +22,14 @@ describe('NodeMatcher', () => {
       ['[/Process\\]', 'trapezoid', 'Process'],
       ['[\\Process/]', 'trapezoid-alt', 'Process'],
       ['(((Process)))', 'double-circle', 'Process'],
-    ])(
-      '"%s" should be parsed as %s shape',
-      (input, expectedShape, expectedLabel) => {
-        const result = matcher.match(input);
+    ])('"%s" should be parsed as %s shape', (input, expectedShape, expectedLabel) => {
+      const result = matcher.match(input);
 
-        expect(result.matched).toBe(true);
-        expect(result.result?.shape).toBe(expectedShape as NodeShape);
-        expect(result.result?.label).toBe(expectedLabel);
-        expect(result.result?.original).toBe(input);
-      },
-    );
+      expect(result.matched).toBe(true);
+      expect(result.result?.shape).toBe(expectedShape as NodeShape);
+      expect(result.result?.label).toBe(expectedLabel);
+      expect(result.result?.original).toBe(input);
+    });
 
     test('空白を含むラベルを正しくパースできる', () => {
       const result = matcher.match('[Process Step 1]');
